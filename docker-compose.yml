@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
       DATABASE_PATH: /app/data/tasks.sqlite
     volumes:
       - tasks-data:/app/data
