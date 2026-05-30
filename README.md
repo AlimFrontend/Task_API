@@ -116,7 +116,7 @@ docker compose up -d --build
 | Поле              | Значение                       |
 | ----------------- | ------------------------------ |
 | **Runtime**       | Node                           |
-| **Build Command** | `npm install && npm run build` |
+| **Build Command** | `npm install --include=dev && npm run build` |
 | **Start Command** | `npm start`                    |
 | **Instance Type** | Free (или Starter за $7)       |
 

@@ -1,9 +1,18 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import type { NextFunction, Request, Response } from 'express';
+
+type RequestLike = {
+  method: string;
+  originalUrl: string;
+};
+
+type ResponseLike = {
+  statusCode: number;
+  on(event: 'finish', listener: () => void): void;
+};
 
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
-  use(request: Request, response: Response, next: NextFunction): void {
+  use(request: RequestLike, response: ResponseLike, next: () => void): void {
     const startedAt = Date.now();
 
     response.on('finish', () => {
