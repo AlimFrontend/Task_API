@@ -122,10 +122,11 @@ docker compose up -d --build
 
 4. **Environment Variables** (вкладка Environment):
 
-| Key        | Value        |
-| ---------- | ------------ |
-| `HOST`     | `0.0.0.0`    |
-| `NODE_ENV` | `production` |
+| Key             | Value               |
+| --------------- | ------------------- |
+| `HOST`          | `0.0.0.0`           |
+| `NODE_ENV`      | `production`        |
+| `DATABASE_PATH` | `/tmp/tasks.sqlite` |
 
 `PORT` Render подставит сам — в коде уже читается из `process.env.PORT`.
 
