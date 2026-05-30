@@ -1,6 +1,6 @@
 # NestJS Task API
 
-REST API для управления задачами на NestJS, TypeScript, TypeORM и SQLite. Валидация DTO, глобальный `ValidationPipe`, middleware для логирования запросов.
+REST API для управления задачами на NestJS, TypeScript, TypeORM и SQLite (драйвер `sql.js`, без native-модулей — стабильно на Render). Валидация DTO, глобальный `ValidationPipe`, middleware для логирования запросов.
 
 ## Требования
 
@@ -148,7 +148,7 @@ curl -X POST https://ВАШ-СЕРВИС.onrender.com/tasks \
 
 #### Если сборка падает
 
-- В логах Build смотрите ошибку `better-sqlite3` — на Render обычно собирается; при проблемах в Support пишут про native modules.
+- Убедитесь, что задана переменная `DATABASE_PATH=/tmp/tasks.sqlite`.
 - Убедитесь, что в репозитории есть `package-lock.json` и Node **22** (файл `.node-version`).
 
 > **Важно:** API без авторизации — не оставляйте надолго в открытом доступе без необходимости.

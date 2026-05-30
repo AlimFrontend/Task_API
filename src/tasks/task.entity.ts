@@ -12,11 +12,11 @@ export class Task {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   title: string;
 
-  @Column({ nullable: true })
-  description?: string | null;
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
 
   @Column({
     type: 'varchar',
