@@ -1,0 +1,5 @@
+node_modules
+dist
+coverage
+tasks.sqlite
+npm-debug.log

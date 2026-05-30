@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_PATH: /app/data/tasks.sqlite
+    volumes:
+      - tasks-data:/app/data
+
+volumes:
+  tasks-data:

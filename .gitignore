@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+tasks.sqlite
+*.log
+.env
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
