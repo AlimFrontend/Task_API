@@ -131,7 +131,7 @@ docker compose up -d --build
 `PORT` Render подставит сам — в коде уже читается из `process.env.PORT`.
 
 5. **Create Web Service** → дождитесь зелёного деплоя.
-6. Откройте URL сервиса, например: `https://nestjs-task-api.onrender.com/tasks`
+6. Откройте URL **вашего** сервиса из Dashboard Render, например: `https://task-api-a1sk.onrender.com/tasks` (не подставляйте текст «ваш-сервис» из примеров).
 
 #### Blueprint (автоконфиг)
 
