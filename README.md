@@ -1,184 +1,97 @@
 # NestJS Task API
 
-REST API для управления задачами на NestJS, TypeScript, TypeORM и SQLite (драйвер `sql.js`, без native-модулей — стабильно на Render). Валидация DTO, глобальный `ValidationPipe`, middleware для логирования запросов.
+REST API для управления задачами: NestJS, TypeScript, TypeORM, SQLite (локально) или PostgreSQL (Docker).
 
-## Требования
-
-- Node.js 22+
-- npm
-- Docker и Docker Compose (для запуска в контейнере)
-
-## Установка
+## Быстрый старт
 
 ```bash
 npm install
-```
-
-## Запуск локально
-
-```bash
 npm run start:dev
 ```
 
-API доступен по адресу `http://localhost:3000`. Данные сохраняются в файл `tasks.sqlite`.
+API: `http://localhost:3000`  
+Swagger: `http://localhost:3000/api`  
+БД по умолчанию: файл `tasks.sqlite` в корне проекта.
 
-По умолчанию сервер слушает `0.0.0.0` (все сетевые интерфейсы). Переменные: `HOST`, `PORT`.
-
-## Сборка
-
-```bash
-npm run build
-npm start
-```
-
-## Запуск в Docker
+## Docker (PostgreSQL)
 
 ```bash
 docker compose up --build
 ```
 
-База SQLite хранится в Docker-томе `tasks-data`.
-
-## Доступ из интернета
-
-`localhost` виден только на вашем ПК. Чтобы API открывался снаружи, нужен **публичный адрес** (туннель или сервер в облаке).
-
-### Вариант 1: Туннель с вашего ПК (быстро, для демо)
-
-1. Запустите API:
+API на порту **3000**, база — PostgreSQL. Для SQLite в Docker:
 
 ```bash
-npm run start:dev
+docker compose --profile sqlite up api-sqlite --build
 ```
-
-2. В другом терминале поднимите туннель (один из сервисов):
-
-**ngrok:**
-
-```bash
-ngrok http 3000
-```
-
-**Cloudflare Tunnel:**
-
-```bash
-cloudflared tunnel --url http://localhost:3000
-```
-
-В выводе появится URL вида `https://xxxx.ngrok-free.app` — его можно отдавать другим людям. Пока туннель и API запущены, сервис доступен из интернета.
-
-Минусы: бесплатные туннели часто меняют URL при перезапуске; ПК должен быть включён.
-
-### Вариант 2: VPS в интернете (стабильно)
-
-Подойдёт любой VPS (Timeweb, Selectel, Hetzner, DigitalOcean и т.п.) с Linux и Docker.
-
-1. Скопируйте проект на сервер (git clone или `scp`).
-2. На сервере:
-
-```bash
-cd nestjs-task-api
-docker compose up -d --build
-```
-
-3. Откройте порт **3000** в файрволе облака (Security Group / UFW).
-4. Проверка: `http://ВАШ_IP:3000/tasks`
-
-Для постоянного домена и HTTPS поставьте перед API **nginx** или **Caddy** с Let's Encrypt (прокси на `localhost:3000`).
-
-### Вариант 3: Render (рекомендуется для демо в интернете)
-
-Сайт: [https://render.com](https://render.com)  
-Документация: [Deploy for Free](https://render.com/docs/free)
-
-#### Сколько стоит
-
-| План        | Цена                  | Для чего                                                                                                                                                   |
-| ----------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Free**    | $0                    | Демо, тест, показать проверяющему. Сервис **засыпает** после ~15 мин без запросов, первый ответ после сна ~30–60 с. До **750 часов** в месяц на workspace. |
-| **Starter** | **~$7/мес** за сервис | Всегда включён, без «холодного старта». Для нормального публичного API.                                                                                    |
-
-Карта для Free не обязательна. HTTPS и домен вида `https://nestjs-task-api.onrender.com` — бесплатно.
-
-> **SQLite на Render:** файл БД живёт на временном диске. После **нового деплоя** или пересоздания сервиса данные могут пропасть. Для тестового задания обычно достаточно; для продакшена лучше PostgreSQL на Render.
-
-#### Что нужно заранее
-
-1. Аккаунт на Render (GitHub-логин удобнее всего).
-2. Код в **GitHub** / GitLab / Bitbucket (Render тянет репозиторий сам).
-
-#### Шаги в Render Dashboard
-
-1. [dashboard.render.com](https://dashboard.render.com) → **New +** → **Web Service**.
-2. Подключите репозиторий с проектом `nestjs-task-api`.
-3. Настройки (если не подхватит `render.yaml` автоматически):
-
-| Поле              | Значение                       |
-| ----------------- | ------------------------------ |
-| **Runtime**       | Node                           |
-| **Build Command** | `npm install --include=dev && npm run build` |
-| **Start Command** | `npm start`                    |
-| **Instance Type** | Free (или Starter за $7)       |
-
-4. **Environment Variables** (вкладка Environment):
-
-| Key             | Value               |
-| --------------- | ------------------- |
-| `HOST`          | `0.0.0.0`           |
-| `NODE_ENV`      | `production`        |
-| `DATABASE_PATH` | `/tmp/tasks.sqlite` |
-
-`PORT` Render подставит сам — в коде уже читается из `process.env.PORT`.
-
-5. **Create Web Service** → дождитесь зелёного деплоя.
-6. Откройте URL **вашего** сервиса из Dashboard Render, например: `https://task-api-a1sk.onrender.com/tasks` (не подставляйте текст «ваш-сервис» из примеров).
-
-#### Blueprint (автоконфиг)
-
-В корне репозитория лежит `render.yaml`. При создании сервиса можно выбрать **Blueprint** и указать этот файл — поля заполнятся сами.
-
-#### Проверка после деплоя
-
-```bash
-curl https://ВАШ-СЕРВИС.onrender.com/tasks
-curl -X POST https://ВАШ-СЕРВИС.onrender.com/tasks \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"Задача с Render\"}"
-```
-
-#### Если сборка падает
-
-- Убедитесь, что задана переменная `DATABASE_PATH=/tmp/tasks.sqlite`.
-- Убедитесь, что в репозитории есть `package-lock.json` и Node **22** (файл `.node-version`).
-
-> **Важно:** API без авторизации — не оставляйте надолго в открытом доступе без необходимости.
 
 ## Эндпоинты
 
-| Метод    | Путь            | Описание                                                                               |
-| -------- | --------------- | -------------------------------------------------------------------------------------- |
-| `GET`    | `/tasks?page=1` | Список задач с пагинацией (10 на страницу), сортировка по дате создания, новые первыми |
-| `GET`    | `/tasks/:id`    | Одна задача по `id` (404, если не найдена)                                             |
-| `POST`   | `/tasks`        | Создание задачи                                                                        |
-| `PATCH`  | `/tasks/:id`    | Частичное обновление задачи                                                            |
-| `DELETE` | `/tasks/:id`    | Удаление задачи                                                                        |
+| Метод    | Путь            | Описание                                      |
+| -------- | --------------- | --------------------------------------------- |
+| `GET`    | `/tasks?page=1` | Список задач (10 на страницу, новые первыми)  |
+| `GET`    | `/tasks/:id`    | Одна задача (404, если не найдена)            |
+| `POST`   | `/tasks`        | Создание задачи                               |
+| `PATCH`  | `/tasks/:id`    | Частичное обновление                          |
+| `DELETE` | `/tasks/:id`    | Удаление (204)                                |
 
-### Пример создания задачи
+Статусы: `TODO`, `IN_PROGRESS`, `DONE`. Поле `title` обязательно.
 
-```json
-{
-  "title": "Подготовить отчёт",
-  "description": "Собрать данные за квартал",
-  "status": "TODO"
-}
-```
-
-Допустимые статусы: `TODO`, `IN_PROGRESS`, `DONE`.
-
-Поле `title` обязательно. `description` — необязательно. По умолчанию статус `TODO`.
-
-## Тесты
+### Примеры curl
 
 ```bash
-npm test
+# Список задач
+curl http://localhost:3000/tasks?page=1
+
+# Создание
+curl -X POST http://localhost:3000/tasks \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"Подготовить отчёт\",\"description\":\"Квартал\",\"status\":\"TODO\"}"
+
+# Получение по id
+curl http://localhost:3000/tasks/1
+
+# Обновление
+curl -X PATCH http://localhost:3000/tasks/1 \
+  -H "Content-Type: application/json" \
+  -d "{\"status\":\"IN_PROGRESS\"}"
+
+# Удаление
+curl -X DELETE http://localhost:3000/tasks/1
 ```
+
+## Переменные окружения
+
+| Переменная       | По умолчанию   | Описание                          |
+| ---------------- | -------------- | --------------------------------- |
+| `HOST`           | `0.0.0.0`      | Хост сервера                      |
+| `PORT`           | `3000`         | Порт                              |
+| `DB_TYPE`        | `sqlite`       | `sqlite` или `postgres`           |
+| `DATABASE_PATH`  | `tasks.sqlite` | Путь к SQLite (при `DB_TYPE=sqlite`) |
+| `DB_HOST`        | `localhost`    | Хост PostgreSQL                   |
+| `DB_PORT`        | `5432`         | Порт PostgreSQL                   |
+| `DB_USERNAME`    | `postgres`     | Пользователь PostgreSQL           |
+| `DB_PASSWORD`    | `postgres`     | Пароль PostgreSQL                 |
+| `DB_NAME`        | `tasks`        | Имя базы PostgreSQL               |
+
+## Сборка и качество кода
+
+```bash
+npm run build
+npm run lint
+npm run format
+npm test          # unit + e2e
+npm run test:unit
+npm run test:e2e
+```
+
+## Деплой
+
+Подробные инструкции: [DEPLOY.md](./DEPLOY.md) (Render, VPS, туннели).
+
+## Стек
+
+- NestJS 11, TypeORM, class-validator
+- Глобальный `ValidationPipe`, middleware логирования запросов
+- Unit-тесты (`TasksService`) + e2e-тесты (supertest)
+- CI: GitHub Actions (lint, test, build)

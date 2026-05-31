@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 tasks.sqlite
+test-e2e.sqlite
 *.log
 .env
 *.tsbuildinfo

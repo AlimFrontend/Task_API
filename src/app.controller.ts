@@ -12,6 +12,7 @@ export class AppController {
         'POST /tasks',
         'PATCH /tasks/:id',
         'DELETE /tasks/:id',
+        'GET /api (Swagger)',
       ],
     };
   }
