@@ -1,3 +1,7 @@
+/**
+ * DTO для PATCH /tasks/:id — частичное обновление.
+ * Все поля опциональны: клиент может отправить только status или только title.
+ */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
@@ -8,7 +12,7 @@ export class UpdateTaskDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty() // Если title передан — не должен быть пустым после trim
   title?: string;
 
   @ApiPropertyOptional({ example: 'Новое описание' })

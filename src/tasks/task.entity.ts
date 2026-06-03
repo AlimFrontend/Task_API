@@ -1,3 +1,7 @@
+/**
+ * Сущность Task — отображение таблицы tasks в БД (TypeORM Entity).
+ * Это модель данных, не контракт API. Для входа/выхода HTTP используются DTO.
+ */
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +11,7 @@ import {
 } from 'typeorm';
 import { TaskStatus } from './task-status.enum';
 
-@Entity('tasks')
+@Entity('tasks') // Имя таблицы в SQLite / PostgreSQL
 export class Task {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,7 +24,7 @@ export class Task {
 
   @Column({
     type: 'varchar',
-    default: TaskStatus.TODO,
+    default: TaskStatus.TODO, // По ТЗ: статус по умолчанию TODO
   })
   status: TaskStatus;
 
@@ -28,5 +32,5 @@ export class Task {
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'datetime' })
-  updatedAt: Date;
+  updatedAt: Date; // Обновляется автоматически при save()
 }

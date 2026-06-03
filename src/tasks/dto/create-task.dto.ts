@@ -1,3 +1,7 @@
+/**
+ * DTO для POST /tasks — контракт тела запроса при создании.
+ * ValidationPipe проверяет декораторы до вызова контроллера.
+ */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
@@ -7,7 +11,7 @@ export class CreateTaskDto {
   @ApiProperty({ example: 'Подготовить отчёт' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty() // title обязателен по ТЗ; после trim пустая строка и пробелы → 400
   title: string;
 
   @ApiPropertyOptional({ example: 'Собрать данные за квартал' })
@@ -17,6 +21,6 @@ export class CreateTaskDto {
 
   @ApiPropertyOptional({ enum: TaskStatus, default: TaskStatus.TODO })
   @IsOptional()
-  @IsEnum(TaskStatus)
+  @IsEnum(TaskStatus) // Только TODO | IN_PROGRESS | DONE
   status?: TaskStatus;
 }

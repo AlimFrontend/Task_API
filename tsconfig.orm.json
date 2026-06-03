@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src/database/**/*.ts", "src/tasks/task.entity.ts", "src/tasks/task-status.enum.ts"]
+}

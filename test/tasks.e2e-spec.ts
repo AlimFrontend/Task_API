@@ -1,3 +1,8 @@
+/**
+ * E2e-тесты — полный HTTP-цикл через supertest.
+ * Поднимается реальное приложение (AppModule) + ValidationPipe, как в main.ts.
+ * БД: отдельный файл test-e2e.sqlite, чтобы не трогать dev-данные.
+ */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
@@ -16,6 +21,7 @@ describe('Tasks (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    // Те же настройки pipe, что в main.ts — иначе e2e не отражают прод-поведение
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,

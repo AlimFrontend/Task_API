@@ -1,3 +1,7 @@
+/**
+ * Unit-тесты TasksService — требование ТЗ (хотя бы 1–2 теста).
+ * Репозиторий TypeORM замокан: проверяем логику сервиса без реальной БД.
+ */
 import { NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test } from '@nestjs/testing';
@@ -26,6 +30,7 @@ describe('TasksService', () => {
       providers: [
         TasksService,
         {
+          // Подменяем Repository<Task> на объект с jest.fn()
           provide: getRepositoryToken(Task),
           useValue: createRepositoryMock(),
         },

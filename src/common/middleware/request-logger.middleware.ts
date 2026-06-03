@@ -1,5 +1,12 @@
+/**
+ * Middleware логирования HTTP-запросов — требование ТЗ.
+ *
+ * Работает до контроллера: вызывает next(), а лог пишет на событие finish ответа,
+ * чтобы в лог попал финальный statusCode (200, 404, 400 и т.д.).
+ */
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
+// Минимальные типы вместо express.Request — достаточно для логирования
 type RequestLike = {
   method: string;
   originalUrl: string;
@@ -22,6 +29,6 @@ export class RequestLoggerMiddleware implements NestMiddleware {
       );
     });
 
-    next();
+    next(); // Передаём управление следующему обработчику (ValidationPipe → Controller)
   }
 }

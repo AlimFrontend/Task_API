@@ -2,6 +2,10 @@
 
 REST API для управления задачами: NestJS, TypeScript, TypeORM, SQLite (локально) или PostgreSQL (Docker).
 
+**Подготовка к ревью с лидом:**
+- [PROJECT_GUIDE.md](./PROJECT_GUIDE.md) — архитектура, файлы, сценарий разговора
+- [INTERVIEW_QA.md](./INTERVIEW_QA.md) — вопросы сеньора и готовые ответы
+
 ## Быстрый старт
 
 ```bash
@@ -73,6 +77,34 @@ curl -X DELETE http://localhost:3000/tasks/1
 | `DB_USERNAME`    | `postgres`     | Пользователь PostgreSQL           |
 | `DB_PASSWORD`    | `postgres`     | Пароль PostgreSQL                 |
 | `DB_NAME`        | `tasks`        | Имя базы PostgreSQL               |
+| `RUN_MIGRATIONS` | `true`         | `false` — не применять миграции при старте |
+| `DB_LOGGING`     | —              | `true` — SQL-логи TypeORM         |
+
+## Миграции
+
+Схема БД управляется **миграциями** (`synchronize` отключён). При старте API pending-миграции применяются автоматически (`migrationsRun`).
+
+```bash
+# Вручную (если нужно до старта приложения)
+npm run migration:run
+
+# Статус миграций
+npm run migration:show
+
+# Откат последней миграции
+npm run migration:revert
+```
+
+Файлы: `src/database/migrations/`. Конфиг CLI: `src/database/data-source.ts`.
+
+Новая миграция после изменения entity:
+
+```bash
+# Сгенерировать по diff entity ↔ БД (нужна поднятая БД с актуальной схемой)
+npm run migration:generate -- src/database/migrations/ИмяМиграции
+```
+
+Если после старого `synchronize` таблица `tasks` уже есть — первая миграция её не пересоздаёт.
 
 ## Сборка и качество кода
 
@@ -91,7 +123,7 @@ npm run test:e2e
 
 ## Стек
 
-- NestJS 11, TypeORM, class-validator
+- NestJS 11, TypeORM, миграции, class-validator
 - Глобальный `ValidationPipe`, middleware логирования запросов
 - Unit-тесты (`TasksService`) + e2e-тесты (supertest)
 - CI: GitHub Actions (lint, test, build)
